@@ -53,7 +53,17 @@ trait HasWallet
                 ->deposit($self, $amount, $meta, $confirmed);
         });
     }
+    public function depositBlock($amount, ?array $meta = null, bool $confirmed = true): Transaction
+        {
+        /** @var Wallet $self */
+            $self = $this;
 
+            return app(DbService::class)->transaction(static function () use ($self, $amount, $meta, $confirmed) {
+                return app(CommonService::class)
+                    ->depositBlock($self, $amount, $meta, $confirmed);
+            });
+        }
+    
     /**
      * Magic laravel framework method, makes it
      *  possible to call property balance.
