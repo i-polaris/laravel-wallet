@@ -153,7 +153,38 @@ class CommonService
             return current($transactions);
         });
     }
+/**
+     * @param Wallet $wallet
+     * @param int|string $amount
+     * @param array|null $meta
+     * @param bool $confirmed
+     *
+     * @return Transaction
+     *
+     * @throws AmountInvalid
+     */
+    public function depositBlock(Wallet $wallet, $amount, ?array $meta, bool $confirmed = true): Transaction
+    {
+        return app(LockService::class)->lock($this, __FUNCTION__, function () use ($wallet, $amount, $meta, $confirmed) {
+            $walletService = app(WalletService::class);
+            $walletService->checkAmount($amount);
 
+            /**
+             * @var WalletModel $wallet
+             */
+            $wallet = $walletService->getWallet($wallet);
+
+            $transactions = $this->multiOperation($wallet, [
+                app(Operation::class)
+                    ->setType(Transaction::TYPE_DEPOSIT_BLOCK)
+                    ->setConfirmed($confirmed)
+                    ->setAmount($amount)
+                    ->setMeta($meta),
+            ]);
+
+            return current($transactions);
+        });
+    }
     /**
      * @param Wallet $wallet
      * @param int|string $amount

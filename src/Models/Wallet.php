@@ -138,6 +138,7 @@ class Wallet extends Model implements Customer, WalletFloat, Confirmable, Exchan
         return $this->transactions()
             ->where('wallet_id', $this->getKey())
             ->where('confirmed', true)
+            ->whereIn('type',[Transaction::TYPE_DEPOSIT,Transaction::TYPE_WITHDRAW])
             ->sum('amount');
     }
 
