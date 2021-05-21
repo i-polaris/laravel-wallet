@@ -22,6 +22,7 @@ interface Wallet
      */
     public function deposit($amount, ?array $meta = null, bool $confirmed = true): Transaction;
 
+    public function depositBlock($amount, ?array $meta = null, bool $confirmed = true): Transaction;
     /**
      * @param int|string $amount
      * @param array|null $meta
