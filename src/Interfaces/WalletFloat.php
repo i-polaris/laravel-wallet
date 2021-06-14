@@ -15,6 +15,8 @@ interface WalletFloat
      */
     public function depositFloat($amount, ?array $meta = null, bool $confirmed = true): Transaction;
 
+    public function depositBlockFloat($amount, ?array $meta = null, bool $confirmed = true): Transaction;
+
     /**
      * @param float|string $amount
      * @param array|null $meta

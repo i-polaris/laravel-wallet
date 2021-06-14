@@ -63,6 +63,16 @@ trait HasWalletFloat
 
         return $this->deposit($result, $meta, $confirmed);
     }
+    public function depositBlockFloat($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    {
+        /** @var Wallet $this */
+        $math = app(Mathable::class);
+        $decimalPlacesValue = app(WalletService::class)->decimalPlacesValue($this);
+        $decimalPlaces = app(WalletService::class)->decimalPlaces($this);
+        $result = $math->round($math->mul($amount, $decimalPlaces, $decimalPlacesValue));
+
+        return $this->depositBlock($result, $meta, $confirmed);
+    }
 
     /**
      * @param float|string $amount
