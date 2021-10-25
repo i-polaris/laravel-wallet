@@ -187,4 +187,15 @@ trait HasWalletFloat
 
         return $math->div($this->balance, $decimalPlaces, $decimalPlacesValue);
     }
+
+    public function getBalanceWithoutDepositBlockFloatAttribute()
+    {
+        $b = \DB::table('transactions')->where('wallet_id', $this->id)->whereIn('type', ['deposit', 'withdraw'])->sum('amount');
+        /** @var Wallet $this */
+        $math = app(Mathable::class);
+        $decimalPlacesValue = app(WalletService::class)->decimalPlacesValue($this);
+        $decimalPlaces = app(WalletService::class)->decimalPlaces($this);
+
+        return floatval($math->div($b, $decimalPlaces, $decimalPlacesValue));
+    }
 }
