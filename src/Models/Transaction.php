@@ -31,6 +31,7 @@ class Transaction extends Model
 {
     public const TYPE_DEPOSIT = 'deposit';
     public const TYPE_WITHDRAW = 'withdraw';
+    public const TYPE_WITHDRAW_BLOCK = 'withdraw_block';
     public const TYPE_DEPOSIT_BLOCK= 'deposit_block';
 
     /**

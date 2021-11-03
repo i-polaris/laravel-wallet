@@ -36,6 +36,7 @@ interface Wallet
      */
     public function withdraw($amount, ?array $meta = null, bool $confirmed = true): Transaction;
 
+    public function withdrawBlock($amount, ?array $meta = null, bool $confirmed = true): Transaction;
     /**
      * @param int|string $amount
      * @param array|null $meta

@@ -167,6 +167,13 @@ trait HasWallet
 
         return $this->forceWithdraw($amount, $meta, $confirmed);
     }
+    public function withdrawBlock($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    {
+        /** @var Wallet $this */
+        app(CommonService::class)->verifyWithdraw($this, $amount);
+
+        return $this->forceWithdrawBlock($amount, $meta, $confirmed);
+    }
 
     /**
      * Checks if you can withdraw funds.
@@ -212,6 +219,17 @@ trait HasWallet
                 ->forceWithdraw($self, $amount, $meta, $confirmed);
         });
     }
+    public function forceWithdrawBlock($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    {
+        /** @var Wallet $self */
+        $self = $this;
+
+        return app(DbService::class)->transaction(static function () use ($self, $amount, $meta, $confirmed) {
+            return app(CommonService::class)
+                ->forceWithdrawBlock($self, $amount, $meta, $confirmed);
+        });
+    }
+
 
     /**
      * the forced transfer is needed when the user does not have the money and we drive it.

@@ -42,6 +42,16 @@ trait HasWalletFloat
 
         return $this->forceWithdraw($result, $meta, $confirmed);
     }
+    public function forceWithdrawBlockFloat($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    {
+        /** @var Wallet $this */
+        $math = app(Mathable::class);
+        $decimalPlacesValue = app(WalletService::class)->decimalPlacesValue($this);
+        $decimalPlaces = app(WalletService::class)->decimalPlaces($this);
+        $result = $math->round($math->mul($amount, $decimalPlaces, $decimalPlacesValue));
+
+        return $this->forceWithdrawBlock($result, $meta, $confirmed);
+    }
 
     /**
      * @param float|string $amount
@@ -95,6 +105,16 @@ trait HasWalletFloat
         $result = $math->round($math->mul($amount, $decimalPlaces, $decimalPlacesValue));
 
         return $this->withdraw($result, $meta, $confirmed);
+    }
+    public function withdrawBlockFloat($amount, ?array $meta = null, bool $confirmed = true): Transaction
+    {
+        /** @var Wallet $this */
+        $math = app(Mathable::class);
+        $decimalPlacesValue = app(WalletService::class)->decimalPlacesValue($this);
+        $decimalPlaces = app(WalletService::class)->decimalPlaces($this);
+        $result = $math->round($math->mul($amount, $decimalPlaces, $decimalPlacesValue));
+
+        return $this->withdrawBlock($result, $meta, $confirmed);
     }
 
     /**
@@ -198,4 +218,26 @@ trait HasWalletFloat
 
         return floatval($math->div($b, $decimalPlaces, $decimalPlacesValue));
     }
+    public function getBalanceOnlyDepositBlockFloatAttribute()
+    {
+        $b = \DB::table('transactions')->where('wallet_id', $this->id)->whereIn('type', ['deposit_block'])->sum('amount');
+        /** @var Wallet $this */
+        $math = app(Mathable::class);
+        $decimalPlacesValue = app(WalletService::class)->decimalPlacesValue($this);
+        $decimalPlaces = app(WalletService::class)->decimalPlaces($this);
+
+        return floatval($math->div($b, $decimalPlaces, $decimalPlacesValue));
+    }
+    public function getBalanceBlockFloatAttribute()
+    {
+        $b = \DB::table('transactions')->where('wallet_id', $this->id)->whereIn('type', ['deposit_block', 'withdraw_block'])->sum('amount');
+        /** @var Wallet $this */
+        $math = app(Mathable::class);
+        $decimalPlacesValue = app(WalletService::class)->decimalPlacesValue($this);
+        $decimalPlaces = app(WalletService::class)->decimalPlaces($this);
+
+        return floatval($math->div($b, $decimalPlaces, $decimalPlacesValue));
+    }
+
+
 }

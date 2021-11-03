@@ -120,6 +120,29 @@ class CommonService
             return current($transactions);
         });
     }
+    public function forceWithdrawBlock(Wallet $wallet, $amount, ?array $meta, bool $confirmed = true): Transaction
+    {
+        return app(LockService::class)->lock($this, __FUNCTION__, function () use ($wallet, $amount, $meta, $confirmed) {
+            $walletService = app(WalletService::class);
+            $walletService->checkAmount($amount);
+
+            /**
+             * @var WalletModel $wallet
+             */
+            $wallet = $walletService->getWallet($wallet);
+
+            $mathService = app(Mathable::class);
+            $transactions = $this->multiOperation($wallet, [
+                app(Operation::class)
+                    ->setType(Transaction::TYPE_WITHDRAW_BLOCK)
+                    ->setConfirmed($confirmed)
+                    ->setAmount($mathService->negative($amount))
+                    ->setMeta($meta),
+            ]);
+
+            return current($transactions);
+        });
+    }
 
     /**
      * @param Wallet $wallet
