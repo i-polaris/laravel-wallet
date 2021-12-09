@@ -94,6 +94,10 @@ trait HasWallet
         /** @var Wallet $this */
         return app(Storable::class)->getBalance($this);
     }
+    public function getBalanceBlockAttribute() {
+        
+        return app(Storable::class)->getBalanceBlock($this);
+    }
 
     /**
      * all user actions on wallets will be in this method.
@@ -170,7 +174,7 @@ trait HasWallet
     public function withdrawBlock($amount, ?array $meta = null, bool $confirmed = true): Transaction
     {
         /** @var Wallet $this */
-        app(CommonService::class)->verifyWithdraw($this, $amount);
+        app(CommonService::class)->verifyWithdrawBlock($this, $amount);
 
         return $this->forceWithdrawBlock($amount, $meta, $confirmed);
     }
@@ -196,6 +200,20 @@ trait HasWallet
 
         return $math->compare($this->balance, $amount) >= 0;
     }
+    public function canWithdrawBlock($amount, bool $allowZero = null): bool
+    {
+        $math = app(Mathable::class);
+
+        /**
+         * Allow to buy for free with a negative balance.
+         */
+        if ($allowZero && ! $math->compare($amount, 0)) {
+            return true;
+        }
+
+        return $math->compare($this->balanceBlock, $amount) >= 0;
+    }
+
 
     /**
      * Forced to withdraw funds from system.

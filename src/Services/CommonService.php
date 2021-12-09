@@ -231,6 +231,19 @@ class CommonService
             throw new InsufficientFunds(trans('wallet::errors.insufficient_funds'));
         }
     }
+    public function verifyWithdrawBlock(Wallet $wallet, $amount, bool $allowZero = null): void
+    {
+        /**
+         * @var HasWallet $wallet
+         */
+        if ($amount && ! $wallet->balanceBlock) {
+            throw new BalanceIsEmpty(trans('wallet::errors.wallet_empty'));
+        }
+
+        if (! $wallet->canWithdrawBlock($amount, $allowZero)) {
+            throw new InsufficientFunds(trans('wallet::errors.insufficient_funds'));
+        }
+    }
 
     /**
      * Create Operation without DB::transaction.

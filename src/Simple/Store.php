@@ -28,6 +28,14 @@ class Store implements Storable
 
         return $this->balanceSheets[$wallet->getKey()];
     }
+    public function getBalanceBlock($object)
+    {
+        $wallet = app(WalletService::class)->getWallet($object);
+        $b = \DB::table('transactions')->where('wallet_id', $wallet->id)->whereIn('type', ['deposit_block', 'withdraw_block'])->sum('amount');
+
+        return $b;
+    }
+
 
     /**
      * {@inheritdoc}
